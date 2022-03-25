@@ -5,8 +5,8 @@ import HeaderOption from "./HeaderOption";
 import HomeIcon from "@material-ui/icons/Home";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import BussinesCenterIcon from "@material-ui/icons/BusinessCenter";
-import ChatIcon from "@material-ui/icons/ChatOutlined";
-import NotifactionsIcon from "@material-ui/icons/SupervisorAccount";
+import ChatIcon from "@material-ui/icons/Chat";
+import NotifactionsIcon from "@material-ui/icons/Notifications";
 
 export default function Header() {
   return (
