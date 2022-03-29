@@ -18,15 +18,19 @@ export default function Header() {
         />
         <div className="header__search">
           <SearchIcon />
-          <input type="text" name="" value="" placeholder="Search"/>
+          <input type="text" />
         </div>
       </div>
       <div className="header__right">
-        <HeaderOption Icon={HomeIcon} title="Home"/>
-        <HeaderOption Icon={SupervisorAccountIcon} title="My Network"/>
-        <HeaderOption Icon={BussinesCenterIcon} title="Job"/>
-        <HeaderOption Icon={ChatIcon} title="Messaging"/>
-        <HeaderOption Icon={NotifactionsIcon} title="Notifications"/>
+        <HeaderOption Icon={HomeIcon} title="Home" />
+        <HeaderOption Icon={SupervisorAccountIcon} title="My Network" />
+        <HeaderOption Icon={BussinesCenterIcon} title="Job" />
+        <HeaderOption Icon={ChatIcon} title="Messaging" />
+        <HeaderOption Icon={NotifactionsIcon} title="Notifications" />
+        <HeaderOption
+          avatar="https://raw.githubusercontent.com/Ashwinvalento/cartoon-avatar/master/lib/images/male/45.png"
+          title="me"
+        />
       </div>
     </div>
   );
