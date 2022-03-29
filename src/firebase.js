@@ -15,7 +15,7 @@ const auth = firebase.auth();
 export { db, auth }; */
 
 import firebase from "firebase/compat/app";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const config = {

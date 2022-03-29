@@ -8,9 +8,11 @@ import InputOption from "./InputOption";
 import CalendarViewDayIcon from "@material-ui/icons/CalendarViewDay";
 import Post from "./Post";
 import { db } from "./firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import firebase from "firebase/compat/app";
+import { collection, query, getDocs, addDoc } from "firebase/firestore";
 
 function Feed() {
+  const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -21,12 +23,30 @@ function Feed() {
   const getDocumentos = async () => {
     const q = query(collection(db, "posts"));
     const querySnapshot = await getDocs(q);
+    setPosts(
+      querySnapshot.forEach((doc) => ({
+        id: doc.id,
+        data: doc.data(),
+      }))
+    );
     querySnapshot.forEach((doc) => {
       console.log(doc.id, " => ", doc.data());
     });
   };
+
+  const addDocumento = async () => {
+    // Add a new document with a generated id.
+    await addDoc(collection(db, "posts"), {
+      name: "Esau Alvarez",
+      description: "This is a test",
+      message: input,
+      photoUrl: "",
+      timestamp: firebase.firebase.FieldValue.serverTimestamp(),
+    });
+  };
   const sendPost = (e) => {
     e.prventDefault();
+    addDocumento();
   };
   return (
     <div className="feed">
@@ -34,7 +54,11 @@ function Feed() {
         <div className="feed__input">
           <CreateIcon />
           <form>
-            <input type="text" />
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
             <button onClick={sendPost} type="submit">
               Send
             </button>
@@ -52,13 +76,15 @@ function Feed() {
         </div>
 
         {/* Post */}
-
-        <Post
-          name="Esau Alvarez"
-          description="Test"
-          message="This worked"
-          photoUrl=""
-        />
+        {/*         {posts.map(({ id, data: { name, description, message, photoUrl } }) => {
+          <Post
+            key={id}
+            name={name}
+            description={description}
+            message={message}
+            photoUrl={photoUrl}
+          />;
+        })} */}
       </div>
     </div>
   );
