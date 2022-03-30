@@ -9,44 +9,70 @@ import CalendarViewDayIcon from "@material-ui/icons/CalendarViewDay";
 import Post from "./Post";
 import { db } from "./firebase";
 import firebase from "firebase/compat/app";
-import { collection, query, getDocs, addDoc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  getDocs,
+  doc,
+  setDoc,
+  addDoc,
+} from "firebase/firestore";
 
 function Feed() {
   const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    getDocumentos();
+    getPosts();
     console.log("finish");
   }, []);
 
-  const getDocumentos = async () => {
+  const getPosts = async () => {
+    let psts = [];
     const q = query(collection(db, "posts"));
     const querySnapshot = await getDocs(q);
-    setPosts(
-      querySnapshot.forEach((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }))
-    );
     querySnapshot.forEach((doc) => {
-      console.log(doc.id, " => ", doc.data());
+      psts.push(doc.data());
     });
+    console.log(psts);
   };
 
-  const addDocumento = async () => {
-    // Add a new document with a generated id.
-    await addDoc(collection(db, "posts"), {
+  const addPost = async () => {
+    // Add a new document with a generated id
+    const post = doc(collection(db, "posts"));
+
+    // later...
+    await setDoc(post, {
       name: "Esau Alvarez",
       description: "This is a test",
       message: input,
       photoUrl: "",
       timestamp: firebase.firebase.FieldValue.serverTimestamp(),
     });
+    /* // Add a new document with a generated id.
+    await setDoc(collection(db, "posts"), {
+      name: "Esau Alvarez",
+      description: "This is a test",
+      message: input,
+      photoUrl: "",
+      timestamp: firebase.firebase.FieldValue.serverTimestamp(),
+    }); */
   };
   const sendPost = (e) => {
-    e.prventDefault();
-    addDocumento();
+    e.preventDefault();
+    /* addPost(); */
+    (async () => {
+      let collRef = await collection(db, "posts"); // returns a collection ref. ie. creates one if one does not exist.
+      let inputObject = {
+        name: "Esau Alvarez",
+        description: "This is a test",
+        message: input,
+        photoUrl: "",
+        timestamp: new Date(),
+      };
+      await addDoc(collRef, inputObject, { merge: true });
+      console.log("collection and its document added now ");
+    })();
   };
   return (
     <div className="feed">
@@ -76,15 +102,17 @@ function Feed() {
         </div>
 
         {/* Post */}
-        {/*         {posts.map(({ id, data: { name, description, message, photoUrl } }) => {
-          <Post
-            key={id}
-            name={name}
-            description={description}
-            message={message}
-            photoUrl={photoUrl}
-          />;
-        })} */}
+        {posts?.map(
+          ({ id, data: { name, description, message, photoUrl } }) => (
+            <Post
+              key={id}
+              name={name}
+              description={description}
+              message={message}
+              photoUrl={photoUrl}
+            />
+          )
+        )}
       </div>
     </div>
   );
