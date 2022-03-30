@@ -8,14 +8,13 @@ import InputOption from "./InputOption";
 import CalendarViewDayIcon from "@material-ui/icons/CalendarViewDay";
 import Post from "./Post";
 import { db } from "./firebase";
-import firebase from "firebase/compat/app";
 import {
   collection,
-  query,
-  getDocs,
-  doc,
-  setDoc,
   addDoc,
+  query,
+  orderBy,
+  serverTimestamp,
+  onSnapshot,
 } from "firebase/firestore";
 
 function Feed() {
@@ -24,43 +23,24 @@ function Feed() {
 
   useEffect(() => {
     getPosts();
-    console.log("finish");
   }, []);
 
   const getPosts = async () => {
-    let psts = [];
-    const q = query(collection(db, "posts"));
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      psts.push(doc.data());
-    });
-    console.log(psts);
+    onSnapshot(
+      query(collection(db, "posts"), orderBy("timestamp", "desc")),
+      (data) => {
+        setPosts(
+          data.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        );
+      }
+    );
   };
 
-  const addPost = async () => {
-    // Add a new document with a generated id
-    const post = doc(collection(db, "posts"));
-
-    // later...
-    await setDoc(post, {
-      name: "Esau Alvarez",
-      description: "This is a test",
-      message: input,
-      photoUrl: "",
-      timestamp: firebase.firebase.FieldValue.serverTimestamp(),
-    });
-    /* // Add a new document with a generated id.
-    await setDoc(collection(db, "posts"), {
-      name: "Esau Alvarez",
-      description: "This is a test",
-      message: input,
-      photoUrl: "",
-      timestamp: firebase.firebase.FieldValue.serverTimestamp(),
-    }); */
-  };
   const sendPost = (e) => {
     e.preventDefault();
-    /* addPost(); */
     (async () => {
       let collRef = await collection(db, "posts"); // returns a collection ref. ie. creates one if one does not exist.
       let inputObject = {
@@ -68,10 +48,10 @@ function Feed() {
         description: "This is a test",
         message: input,
         photoUrl: "",
-        timestamp: new Date(),
+        timestamp: serverTimestamp(),
       };
       await addDoc(collRef, inputObject, { merge: true });
-      console.log("collection and its document added now ");
+      setInput("");
     })();
   };
   return (
