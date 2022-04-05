@@ -6,6 +6,7 @@ import SubscriptionsIcon from "@material-ui/icons/Subscriptions";
 import EventNoteIcon from "@material-ui/icons/EventNote";
 import InputOption from "./InputOption";
 import CalendarViewDayIcon from "@material-ui/icons/CalendarViewDay";
+import FlipMove from "react-flip-move";
 import Post from "./Post";
 import { db } from "./firebase";
 import {
@@ -16,8 +17,11 @@ import {
   serverTimestamp,
   onSnapshot,
 } from "firebase/firestore";
+import { useSelector } from "react-redux";
+import { selectUser } from "./features/userSlice";
 
 function Feed() {
+  const user = useSelector(selectUser);
   const [input, setInput] = useState("");
   const [posts, setPosts] = useState([]);
 
@@ -44,10 +48,10 @@ function Feed() {
     (async () => {
       let collRef = await collection(db, "posts"); // returns a collection ref. ie. creates one if one does not exist.
       let inputObject = {
-        name: "Esau Alvarez",
-        description: "This is a test",
+        name: user?.displayName,
+        description: user?.email,
         message: input,
-        photoUrl: "",
+        photoUrl: user?.photoUrl || "",
         timestamp: serverTimestamp(),
       };
       await addDoc(collRef, inputObject, { merge: true });
@@ -82,17 +86,19 @@ function Feed() {
         </div>
 
         {/* Post */}
-        {posts?.map(
-          ({ id, data: { name, description, message, photoUrl } }) => (
-            <Post
-              key={id}
-              name={name}
-              description={description}
-              message={message}
-              photoUrl={photoUrl}
-            />
-          )
-        )}
+        <FlipMove>
+          {posts?.map(
+            ({ id, data: { name, description, message, photoUrl } }) => (
+              <Post
+                key={id}
+                name={name}
+                description={description}
+                message={message}
+                photoUrl={photoUrl}
+              />
+            )
+          )}
+        </FlipMove>
       </div>
     </div>
   );
